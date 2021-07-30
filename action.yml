@@ -2,6 +2,9 @@
 name: 'Sqitch Deployment'
 description: 'Deploy schema in GHA wth sqitch'
 inputs:
+  dir_of_sqitch_plan: 
+    description: 'Directory of Sqitch plan'
+    required: true
   host:  # id of input
     description: 'Database host'
     required: true
@@ -29,9 +32,10 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.host }}
-    - ${{ inputs.port }}
-    - ${{ inputs.password }}
-    - ${{ inputs.database }}
     - ${{ inputs.user }}
+    - ${{ inputs.password }}    
+    - ${{ inputs.database }}
+    - ${{ inputs.host }}
+    - ${{ inputs.port }}   
     - ${{ inputs.ssl-mode }}
+    - ${{ inputs.dir_of_sqitch_plan }}
