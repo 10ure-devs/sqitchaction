@@ -2,8 +2,8 @@
 name: 'Sqitch Deployment'
 description: 'Deploy schema in GHA wth sqitch'
 inputs:
-  dir_of_sqitch_plan: 
-    description: 'Directory of Sqitch plan'
+  directory: 
+    description: 'Directory of schema'
     required: true
   host:  # id of input
     description: 'Database host'
@@ -38,4 +38,4 @@ runs:
     - ${{ inputs.host }}
     - ${{ inputs.port }}   
     - ${{ inputs.ssl-mode }}
-    - ${{ inputs.dir_of_sqitch_plan }}
+    - ${{ inputs.directory }}
