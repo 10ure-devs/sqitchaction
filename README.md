@@ -1,0 +1,2 @@
+# sqitchaction
+Sqitch GHA
