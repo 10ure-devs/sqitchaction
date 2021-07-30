@@ -1,4 +1,6 @@
 #!/bin/sh -l
+set -e 
+set -o pipefail
 
 echo "Navigating to $7"
 
