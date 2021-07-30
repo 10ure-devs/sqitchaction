@@ -1,0 +1,37 @@
+# action.yml
+name: 'Sqitch Deployment'
+description: 'Deploy schema in GHA wth sqitch'
+inputs:
+  host:  # id of input
+    description: 'Database host'
+    required: true
+  port:  # id of input
+    description: 'Database Port'
+    required: true
+    default: "5432"
+  password:  # id of input
+    description: 'Database Password'
+    required: true
+  user:  # id of input
+    description: 'Database User'
+    required: true
+  database:  # id of input
+    description: 'Database Name'
+    required: true
+  ssl-mode: 
+    description: 'Database Name'
+    required: true
+    default: "required"
+outputs:
+  time: # id of output
+    description: 'The time you deployed the schema'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.host }}
+    - ${{ inputs.port }}
+    - ${{ inputs.password }}
+    - ${{ inputs.database }}
+    - ${{ inputs.user }}
+    - ${{ inputs.ssl-mode }}
