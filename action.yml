@@ -5,20 +5,23 @@ inputs:
   directory: 
     description: 'Directory of schema'
     required: true
-  host:  # id of input
+  host: 
     description: 'Database host'
     required: true
-  port:  # id of input
+  port: 
     description: 'Database Port'
     required: true
     default: "5432"
-  password:  # id of input
+  additional_sqitch_args: 
+    description: 'Additional sqitch arguments'
+    required: false
+  password:  
     description: 'Database Password'
     required: true
-  user:  # id of input
+  user:  
     description: 'Database User'
     required: true
-  database:  # id of input
+  database: 
     description: 'Database Name'
     required: true
   ssl-mode: 
@@ -39,3 +42,4 @@ runs:
     - ${{ inputs.port }}   
     - ${{ inputs.ssl-mode }}
     - ${{ inputs.directory }}
+    - ${{ inputs.additional_sqitch_args }}
