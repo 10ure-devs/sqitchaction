@@ -31,10 +31,10 @@ PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "AL
 
 materialized_views=$(psql -tqc "select matviewname from pg_catalog.pg_matviews")
 if [ -n "${materialized_views:-}" ]; then
-    log "Setting ${USER_PGUSER} as the owner of the following materialized views:"
+    log "Setting $9 as the owner of the following materialized views:"
     log "${materialized_views}"
     for view in ${materialized_views}; do
-        psql -c "ALTER MATERIALIZED VIEW ${view} OWNER TO ${USER_PGUSER?};"
+        psql -c "ALTER MATERIALIZED VIEW ${view} OWNER TO $9;"
     done
 else
     log "No materialized views found, and that's ok."
