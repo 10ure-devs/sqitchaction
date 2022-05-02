@@ -21,6 +21,9 @@ inputs:
   user:  
     description: 'Database User'
     required: true
+  application-user:  
+    description: 'Application Database User'
+    required: true
   database: 
     description: 'Database Name'
     required: true
@@ -42,4 +45,5 @@ runs:
     - ${{ inputs.port }}   
     - ${{ inputs.ssl-mode }}
     - ${{ inputs.directory }}
+    - ${{ inputs.application-user }}
     - ${{ inputs.additional_sqitch_args }}
