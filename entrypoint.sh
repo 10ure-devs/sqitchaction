@@ -7,6 +7,14 @@ ls
 
 
 
+export PGUSER=$1
+export PGPASSWORD=$2
+export PGDATABASE=$3
+export PGHOST=$4
+export PGPORT=$5
+export SSLMODE=$6
+
+
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 sqitch deploy $8 || exit 1
 
 echo "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $9"
