@@ -45,5 +45,5 @@ runs:
     - ${{ inputs.port }}   
     - ${{ inputs.ssl-mode }}
     - ${{ inputs.directory }}
-    - ${{ inputs.application-user }}
     - ${{ inputs.additional_sqitch_args }}
+    - ${{ inputs.application-user }}
