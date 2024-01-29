@@ -15,14 +15,11 @@ export SSLMODE=$6
 env
 
 # give snapshooter role min permissions to dump database for backups
-# Grant CONNECT privilege on the database
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT CONNECT ON DATABASE $3 TO snapshooter"
-
-# Grant SELECT privilege on all tables in the database
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT SELECT ON ALL TABLES IN SCHEMA public TO snapshooter"
-
-# Grant USAGE privilege on all sequences in the database
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO snapshooter"
+PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT SELECT ON ALL TABLES IN SCHEMA sqitch TO snapshooter"
+PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT USAGE ON ALL SEQUENCES IN SCHEMA sqitch TO snapshooter"
 
 
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 sqitch deploy $8 || exit 1
