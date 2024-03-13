@@ -14,6 +14,8 @@ export SSLMODE=$6
 
 env
 
+PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 sqitch deploy $8 || exit 1
+
 # give snapshooter role min permissions to dump database for backups
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT CONNECT ON DATABASE $3 TO snapshooter"
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT SELECT ON ALL TABLES IN SCHEMA public TO snapshooter"
@@ -26,30 +28,42 @@ PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GR
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT USAGE ON ALL SEQUENCES IN SCHEMA sqitch TO snapshooter"
 
 
-PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 sqitch deploy $8 || exit 1
-
-echo "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $9"
-PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $9"
-
-echo "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $9"
-PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $9"
-
-echo "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO $9"
-PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO $9"
-
-echo "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT USAGE ON SEQUENCES TO $9"
-PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT USAGE ON SEQUENCES TO $9"
-
 materialized_views=$(psql -tqc "select matviewname from pg_catalog.pg_matviews")
-if [ -n "${materialized_views:-}" ]; then
-    echo "Setting $9 as the owner of the following materialized views:"
-    echo "${materialized_views}"
-    for view in ${materialized_views}; do
-        psql -c "ALTER MATERIALIZED VIEW ${view} OWNER TO $9;"
-    done
+roles=$(psql -tqc "select usename FROM pg_catalog.pg_user where usename like '$9%'")
+if [ -n "${roles:-}" ]; then
+    for role in ${roles}; do
+        echo "Granting role ${role} permissions"
+        echo "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${role}"
+        PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${role}"
+
+        echo "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ${role}"
+        PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ${role}"
+
+        echo "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ${role}"
+        PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ${role}"
+
+        echo "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT USAGE ON SEQUENCES TO ${role}"
+        PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT USAGE ON SEQUENCES TO ${role}"
+
+        if [ -n "${materialized_views:-}" ]; then
+            echo "Setting ${role} as the owner of the following materialized views: ${materialized_views}"
+            for view in ${materialized_views}; do
+                psql -c "ALTER MATERIALIZED VIEW ${view} OWNER TO ${role};"
+            done
+        else
+            echo "No materialized views found, and that's ok."
+        fi
+  done
 else
-    echo "No materialized views found, and that's ok."
+    echo "no role with prefix $9 found"
+    exit 1
 fi
+
+
+
+
+
+
 
 
 
