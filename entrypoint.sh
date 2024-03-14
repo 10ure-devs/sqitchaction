@@ -30,8 +30,9 @@ PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GR
 
 materialized_views=$(psql -tqc "select matviewname from pg_catalog.pg_matviews")
 roles=$(psql -tqc "select usename FROM pg_catalog.pg_user where usename like '$9%'")
-rolesLen=${#roles[@]}
-if [ $rolesLen -gt 1 ]; then
+echo "Queried roles ${roles}"
+rolesLen=$(echo "$roles" | wc -w)
+if [ "$rolesLen" -gt 1 ]; then
   echo "Expected 1 role got ${roles}"
 fi
 
