@@ -26,7 +26,7 @@ PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GR
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT SELECT ON sqitch.releases TO snapshooter"
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT USAGE ON ALL SEQUENCES IN SCHEMA sqitch TO snapshooter"
 
-
+echo "Application User $9"
 materialized_views=$(psql -tqc "select matviewname from pg_catalog.pg_matviews")
 roles=$(psql -tqc "select usename FROM pg_catalog.pg_user where usename like '$9%'")
 echo "Queried roles ${roles}"
