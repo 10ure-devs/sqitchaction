@@ -28,7 +28,7 @@ PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GR
 
 echo "Application User $9"
 materialized_views=$(psql -tqc "select matviewname from pg_catalog.pg_matviews")
-roles=$(psql -tqc "select usename FROM pg_catalog.pg_user where usename like '$9%'")
+roles=$(psql -tqc "select usename FROM pg_catalog.pg_user where usename ~ '$9_[0-9A-Fa-f]{8}_[0-9A-Fa-f]{4}_[0-9A-Fa-f]{4}_[0-9A-Fa-f]{4}_[0-9A-Fa-f]{12}'")
 echo "Queried roles ${roles}"
 rolesLen=$(echo "$roles" | wc -w)
 if [ "$rolesLen" -gt 1 ]; then
