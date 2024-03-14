@@ -3,7 +3,6 @@ set -eu
 
 echo "Navigating to $7"
 cd $7
-ls
 
 export PGUSER=$1
 export PGPASSWORD=$2
@@ -34,6 +33,7 @@ echo "Queried roles ${roles}"
 rolesLen=$(echo "$roles" | wc -w)
 if [ "$rolesLen" -gt 1 ]; then
   echo "Expected 1 role got ${roles}"
+  exit 1
 fi
 
 echo "Processing roles ${roles}"

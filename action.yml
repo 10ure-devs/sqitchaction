@@ -1,48 +1,48 @@
 # action.yml
-name: 'Sqitch Deployment'
-description: 'Deploy schema in GHA wth sqitch'
+name: "Sqitch Deployment"
+description: "Deploy schema in GHA wth sqitch"
 inputs:
-  directory: 
-    description: 'Directory of schema'
+  directory:
+    description: "Directory of schema"
     required: true
-  host: 
-    description: 'Database host'
+  host:
+    description: "Database host"
     required: true
-  port: 
-    description: 'Database Port'
+  port:
+    description: "Database Port"
     required: true
     default: "5432"
-  additional_sqitch_args: 
-    description: 'Additional sqitch arguments'
+  additional_sqitch_args:
+    description: "Additional sqitch arguments"
     required: false
-  password:  
-    description: 'Database Password'
+  password:
+    description: "Database Password"
     required: true
-  user:  
-    description: 'Database User'
+  user:
+    description: "Database User"
     required: true
-  application-user:  
-    description: 'Application Database User'
+  application-user:
+    description: "Application Database User"
     required: true
-  database: 
-    description: 'Database Name'
+  database:
+    description: "Database Name"
     required: true
-  ssl-mode: 
-    description: 'Database Name'
+  ssl-mode:
+    description: "Database Name"
     required: true
     default: "required"
 outputs:
   time: # id of output
-    description: 'The time you deployed the schema'
+    description: "The time you deployed the schema"
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: "docker"
+  image: "Dockerfile"
   args:
     - ${{ inputs.user }}
-    - ${{ inputs.password }}    
+    - ${{ inputs.password }}
     - ${{ inputs.database }}
     - ${{ inputs.host }}
-    - ${{ inputs.port }}   
+    - ${{ inputs.port }}
     - ${{ inputs.ssl-mode }}
     - ${{ inputs.directory }}
     - ${{ inputs.additional_sqitch_args }}
