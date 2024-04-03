@@ -49,6 +49,9 @@ for role in ${roles}; do
     echo "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT USAGE ON SEQUENCES TO ${role}"
     PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT USAGE ON SEQUENCES TO ${role}"
 
+    echo "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ${role}"
+    PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "ALTER DEFAULT PRIVILEGES FOR USER ${role} IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO snapshooter"
+
     if [ -n "${materialized_views:-}" ]; then
         echo "Setting ${role} as the owner of the following materialized views: ${materialized_views}"
         for view in ${materialized_views}; do
