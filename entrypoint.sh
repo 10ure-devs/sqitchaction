@@ -68,7 +68,7 @@ for role in ${roles}; do
             psql -c "ALTER TABLE ${tbl} OWNER TO ${role};"
         done
     else
-        echo "No materialized views found, and that's ok."
+        echo "No tables found, and that's ok."
     fi
 done
 
