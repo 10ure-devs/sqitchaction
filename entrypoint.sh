@@ -26,6 +26,7 @@ PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GR
 
 echo "Application User $9"
 materialized_views=$(psql -tqc "select matviewname from pg_catalog.pg_matviews")
+tables=$(psql -tqc "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name like '%app_tble_org_usrs%'")
 roles=$(psql -tqc "select usename FROM pg_catalog.pg_user where usename ~ '$9_[0-9A-Fa-f]{8}_[0-9A-Fa-f]{4}_[0-9A-Fa-f]{4}_[0-9A-Fa-f]{4}_[0-9A-Fa-f]{12}'")
 echo "Queried roles ${roles}"
 rolesLen=$(echo "$roles" | wc -w)
@@ -53,9 +54,18 @@ for role in ${roles}; do
     PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "ALTER DEFAULT PRIVILEGES FOR USER ${role} IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO snapshooter"
 
     if [ -n "${materialized_views:-}" ]; then
-        echo "Setting ${role} as the owner of the following materialized views: ${materialized_views}"
         for view in ${materialized_views}; do
+            echo "Setting ${role} as the owner of the following materialized views: ${view}"
             psql -c "ALTER MATERIALIZED VIEW ${view} OWNER TO ${role};"
+        done
+    else
+        echo "No materialized views found, and that's ok."
+    fi
+
+    if [ -n "${tables:-}" ]; then
+        for tbl in ${tables}; do
+            echo "Setting ${role} as the owner of the following table: ${tbl}"
+            psql -c "ALTER TABLE ${tbl} OWNER TO ${role};"
         done
     else
         echo "No materialized views found, and that's ok."
