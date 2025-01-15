@@ -11,9 +11,13 @@ export PGHOST=$4
 export PGPORT=$5
 export SSLMODE=$6
 
+
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 sqitch deploy $8 || exit 1
 
 # give snapshooter role min permissions to dump database for backups
+if [ "$10" = "true" ]; then
+    echo "Skipping Snapshooter Setup"
+else
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT CONNECT ON DATABASE $3 TO snapshooter"
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT SELECT ON ALL TABLES IN SCHEMA public TO snapshooter"
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO snapshooter"
@@ -23,6 +27,8 @@ PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GR
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT SELECT ON ALL SEQUENCES IN SCHEMA sqitch TO snapshooter"
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT SELECT ON sqitch.releases TO snapshooter"
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "GRANT USAGE ON ALL SEQUENCES IN SCHEMA sqitch TO snapshooter"
+fi
+
 
 echo "Application User $9"
 materialized_views=$(psql -tqc "select matviewname from pg_catalog.pg_matviews")
@@ -50,8 +56,12 @@ for role in ${roles}; do
     echo "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT USAGE ON SEQUENCES TO ${role}"
     PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT USAGE ON SEQUENCES TO ${role}"
 
-    echo "ALTER DEFAULT PRIVILEGES FOR USER doadmin IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ${role}"
-    PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "ALTER DEFAULT PRIVILEGES FOR USER ${role} IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO snapshooter"
+    if [ "$10" = "true" ]; then
+     echo "Skipping Snapshooter Permissions"
+    else
+      echo "ALTER DEFAULT PRIVILEGES FOR USER snapshooter IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO ${role}"
+      PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 psql -c "ALTER DEFAULT PRIVILEGES FOR USER ${role} IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO snapshooter"
+    fi
 
     if [ -n "${materialized_views:-}" ]; then
         for view in ${materialized_views}; do
