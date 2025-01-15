@@ -23,7 +23,8 @@ inputs:
     required: true
   skip-snapshooter:
     description: "Skip snapshooter setup"
-    required: false
+    required: true
+    default: "true"
   application-user:
     description: "Application Database User"
     required: true

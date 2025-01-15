@@ -10,12 +10,11 @@ export PGDATABASE=$3
 export PGHOST=$4
 export PGPORT=$5
 export SSLMODE=$6
-
+echo "Skipping Snapshooter: $10"
 
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 sqitch deploy $8 || exit 1
 
 # give snapshooter role min permissions to dump database for backups
-echo "Skipping Snapshooter: $10"
 if [ "$10" = "true" ]; then
     echo "Skipping Snapshooter Setup"
 else
