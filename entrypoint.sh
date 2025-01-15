@@ -10,7 +10,8 @@ export PGDATABASE=$3
 export PGHOST=$4
 export PGPORT=$5
 export SSLMODE=$6
-echo "Skipping Snapshooter: $10"
+export SKIP_SNAPSHOOTER=$6
+echo "Skip Snapshooter: ${SKIP_SNAPSHOOTER}"
 
 PGUSER=$1 PGPASSWORD=$2 PGDATABASE=$3 PGHOST=$4 PGPORT=$5 SSLMODE=$6 sqitch deploy $8 || exit 1
 
